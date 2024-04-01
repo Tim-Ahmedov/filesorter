@@ -1,37 +1,43 @@
 package sorter
 
 import (
+	"filesorter/domain"
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
-type fileData struct {
-	modificationTime string
-	fullPath         string
-	extension        string
-	size             int64
+type Sorter struct {
 }
 
-func SortFiles(unsortedFiles []*string) ([]fileData, error) {
-	var sortedFieldsResult []fileData
+func (s *Sorter) SortFiles(unsortedFiles []*string) *domain.SortedFilesData {
+	var result = &domain.SortedFieldsResult
+	var sortedFileSetter = domain.SortedFilesData{}
 
 	for i := 0; i < len(unsortedFiles); i++ {
-		var fileStat, err = os.Stat(*unsortedFiles[i])
-		if err != nil {
+		var fileStat, errGetFileStat = os.Stat(*unsortedFiles[i])
+		if errGetFileStat != nil {
+			fmt.Printf("Error getting data for file %s\n", *unsortedFiles[i])
 			continue
 		}
 
-		var fullPath, _ = filepath.Abs(*unsortedFiles[i])
-
-		var fileData = fileData{
-			modificationTime: fileStat.ModTime().String(),
-			fullPath:         fullPath,
-			extension:        filepath.Ext(*unsortedFiles[i]),
-			size:             fileStat.Size(),
+		var fullPath, errGetFilePath = filepath.Abs(*unsortedFiles[i])
+		if errGetFilePath != nil {
+			fmt.Printf("Error getting file path for %s\n", *unsortedFiles[i])
+			continue
 		}
 
-		sortedFieldsResult = append(sortedFieldsResult, fileData)
+		var sortedFile = sortedFileSetter.SetData(
+			fullPath,
+			fileStat.ModTime(),
+			filepath.Ext(*unsortedFiles[i]),
+			fileStat.Size(),
+		)
+
+		domain.SortedFieldsResult = append(domain.SortedFieldsResult, sortedFile)
 	}
 
-	return sortedFieldsResult, nil
+	fmt.Printf("Sorted %d files from %d\n", len(domain.SortedFieldsResult), len(unsortedFiles))
+
+	return domain.SortedFieldsResult
 }

@@ -12,12 +12,12 @@ func main() {
 	if err != nil {
 		fmt.Println("Error")
 	}
+	var fileSorter = sorter.Sorter{} //Why we can't use function SortFiles directly without struct?
 
-	files, err := sorter.SortFiles(inputFiles)
-	if err != nil {
-		return
+	files := fileSorter.SortFiles(inputFiles)
+
+	for i := 0; i < len(files); i++ {
+		fmt.Printf("%v", files[i])
+		fmt.Println("")
 	}
-
-	fmt.Printf("%v", files)
-
 }
