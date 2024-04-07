@@ -10,9 +10,8 @@ import (
 type Sorter struct {
 }
 
-func (s *Sorter) SortFiles(unsortedFiles []*string) *domain.SortedFilesData {
-	var result = &domain.SortedFieldsResult
-	var sortedFileSetter = domain.SortedFilesData{}
+func (s *Sorter) SortFiles(unsortedFiles []*string) []*domain.SortedFileData {
+	var SortedFileDataResult []*domain.SortedFileData
 
 	for i := 0; i < len(unsortedFiles); i++ {
 		var fileStat, errGetFileStat = os.Stat(*unsortedFiles[i])
@@ -27,17 +26,20 @@ func (s *Sorter) SortFiles(unsortedFiles []*string) *domain.SortedFilesData {
 			continue
 		}
 
-		var sortedFile = sortedFileSetter.SetData(
-			fullPath,
-			fileStat.ModTime(),
-			filepath.Ext(*unsortedFiles[i]),
-			fileStat.Size(),
-		)
+		var sortedFile = domain.SortedFileData{
+			ModificationTime: fileStat.ModTime().Format("2006-01-02"),
+			Data: domain.FileData{
+				ModificationTime: fileStat.ModTime(),
+				FullPath:         fullPath,
+				Extension:        filepath.Ext(*unsortedFiles[i]),
+				Size:             fileStat.Size(),
+			},
+		}
 
-		domain.SortedFieldsResult = append(domain.SortedFieldsResult, sortedFile)
+		SortedFileDataResult = append(SortedFileDataResult, &sortedFile)
 	}
 
-	fmt.Printf("Sorted %d files from %d\n", len(domain.SortedFieldsResult), len(unsortedFiles))
+	fmt.Printf("Sorted %d files from %d\n", len(SortedFileDataResult), len(unsortedFiles))
 
-	return domain.SortedFieldsResult
+	return SortedFileDataResult
 }

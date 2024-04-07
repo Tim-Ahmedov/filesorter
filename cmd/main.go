@@ -3,6 +3,7 @@ package main
 import (
 	"filesorter/internal/service/sorter"
 	fileStorage "filesorter/internal/storage/file"
+	"filesorter/internal/uploader/localFile"
 	"fmt"
 )
 
@@ -16,8 +17,10 @@ func main() {
 
 	files := fileSorter.SortFiles(inputFiles)
 
-	for i := 0; i < len(files); i++ {
-		fmt.Printf("%v", files[i])
-		fmt.Println("")
-	}
+	//for i := 0; i < len(files); i++ {
+	//	fmt.Printf("%v\n", files[i])
+	//}
+
+	var uploader = localFile.LocalFile{}
+	uploader.UploadFiles("./test", files)
 }

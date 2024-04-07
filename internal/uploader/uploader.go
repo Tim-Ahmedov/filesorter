@@ -1,7 +1,7 @@
 package uploader
 
-import "filesorter/internal/service/sorter"
+import "filesorter/domain"
 
 type Uploader interface {
-	UploadFiles() ([]*sorter.SortedFilesData, error)
+	UploadFiles(string, []*domain.SortedFileData) bool
 }
